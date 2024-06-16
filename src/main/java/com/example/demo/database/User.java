@@ -20,6 +20,7 @@ public class User {
     private UUID id;
 
     private String name;
+    @Column(unique = true)
     private String email;
     private Boolean isActive = true;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)

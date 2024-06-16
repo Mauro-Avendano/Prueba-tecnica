@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.UserService;
 import com.example.demo.database.User;
+import com.example.demo.exceptions.EmailAlreadyExistsException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -156,7 +157,7 @@ public class UserControllerTest {
         UserRequest userRequest = new UserRequest("Juan", "juan@gmail.com", "validpassw0rd", phones);
         String requestBody = new ObjectMapper().writeValueAsString(userRequest);
 
-        when(userService.createUser(any(User.class))).thenThrow(new RuntimeException("el email ya existe"));
+        when(userService.createUser(any(User.class))).thenThrow(new EmailAlreadyExistsException("el email ya existe"));
 
         mockMvc.perform(post("/users")
                         .contentType(MediaType.APPLICATION_JSON)

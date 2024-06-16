@@ -4,6 +4,7 @@ import com.example.demo.JwtUtil;
 import com.example.demo.UserService;
 import com.example.demo.database.PhoneNumber;
 import com.example.demo.database.User;
+import com.example.demo.exceptions.EmailAlreadyExistsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,10 +55,9 @@ public class UserController {
             User createdUser = userService.createUser(user);
 
             return new ResponseEntity<>(buildUserResponse(createdUser), HttpStatus.CREATED);
+        } catch (EmailAlreadyExistsException e) {
+            return new ResponseEntity<>("{\"mensaje\": \"el correo ya existe\"}", HttpStatus.FORBIDDEN);
         } catch (Exception e) {
-            if (e.getMessage().contains("email")) {
-                return new ResponseEntity<>("{\"mensaje\": \"el correo ya existe\"}", HttpStatus.FORBIDDEN);
-            }
             return new ResponseEntity<>(String.format("{\"mensaje\": \"%s\"}", e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

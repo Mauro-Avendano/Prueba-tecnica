@@ -2,7 +2,9 @@ package com.example.demo;
 
 import com.example.demo.database.User;
 import com.example.demo.database.UserRepository;
+import com.example.demo.exceptions.EmailAlreadyExistsException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -15,14 +17,10 @@ public class UserService {
     }
 
     public User createUser(User user) {
-        if (emailExists(user.getEmail())) {
-            throw new RuntimeException("El email ya existe");
+        try {
+            return userRepository.save(user);
+        } catch (DataIntegrityViolationException e) {
+            throw new EmailAlreadyExistsException("El mail ya existe: " + user.getEmail());
         }
-
-        return userRepository.save(user);
-    }
-
-    private boolean emailExists(String email) {
-        return userRepository.existsByEmail(email);
     }
 }

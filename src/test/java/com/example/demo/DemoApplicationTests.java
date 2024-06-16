@@ -1,16 +1,11 @@
 package com.example.demo;
 
-import com.example.demo.controller.UserRequest;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -28,7 +23,7 @@ class DemoApplicationTests {
 	}
 
 	@Test
-	public void testCreateUser() throws Exception {
+	public void createUserShouldWork() throws Exception {
 		String requestBody = "{\"name\":\"John Doe\",\"email\":\"john@example.com\",\"password\":\"passwordValid4\",\"phones\":[{\"number\":\"123456789\",\"countrycode\":\"1\",\"citycode\":\"123\"}]}";
 
 		mockMvc.perform(post("/users")
@@ -42,5 +37,20 @@ class DemoApplicationTests {
 				.andExpect(jsonPath("$.last_login").exists())
 				.andExpect(jsonPath("$.jwt").exists())
 				.andExpect(jsonPath("$.isactive").exists());
+	}
+
+	@Test
+	public void createUserShouldReturnAnErrorForDuplicatedEmail() throws Exception {
+		String requestBody = "{\"name\":\"John Doe\",\"email\":\"john@example.com\",\"password\":\"passwordValid4\",\"phones\":[{\"number\":\"123456789\",\"countrycode\":\"1\",\"citycode\":\"123\"}]}";
+
+		mockMvc.perform(post("/users")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(requestBody));
+
+		mockMvc.perform(post("/users")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(requestBody))
+				.andExpect(status().isForbidden())
+				.andExpect(jsonPath("$.mensaje").value("el correo ya existe"));
 	}
 }
