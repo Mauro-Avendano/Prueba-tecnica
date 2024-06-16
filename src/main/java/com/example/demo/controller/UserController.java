@@ -33,26 +33,7 @@ public class UserController {
                 return requestValidation;
             }
 
-            User user = new User();
-            user.setName(userRequest.getName());
-            user.setEmail(userRequest.getEmail());
-            user.setPassword(user.getPassword());
-            user.setToken(JwtUtil.generateToken(userRequest.getEmail(), userRequest.getName()));
-            List<PhoneRequest> phoneRequests = userRequest.getPhones();
-
-            List<PhoneNumber> phones = phoneRequests.stream()
-                    .map(phoneRequest -> {
-                        PhoneNumber phone = new PhoneNumber();
-                        phone.setNumber(phoneRequest.getNumber());
-                        phone.setCountryCode(phoneRequest.getCountrycode());
-                        phone.setCityCode(phoneRequest.getCitycode());
-                        return phone;
-                    })
-                    .collect(Collectors.toList());
-
-            user.setPhoneNumbers(phones);
-
-            User createdUser = userService.createUser(user);
+            User createdUser = userService.createUser(buildServiceInput(userRequest));
 
             return new ResponseEntity<>(buildUserResponse(createdUser), HttpStatus.CREATED);
         } catch (EmailAlreadyExistsException e) {
@@ -60,6 +41,29 @@ public class UserController {
         } catch (Exception e) {
             return new ResponseEntity<>(String.format("{\"mensaje\": \"%s\"}", e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    private User buildServiceInput(UserRequest userRequest) {
+        User user = new User();
+        user.setName(userRequest.getName());
+        user.setEmail(userRequest.getEmail());
+        user.setPassword(user.getPassword());
+        user.setToken(JwtUtil.generateToken(userRequest.getEmail(), userRequest.getName()));
+        List<PhoneRequest> phoneRequests = userRequest.getPhones();
+
+        List<PhoneNumber> phones = phoneRequests.stream()
+                .map(phoneRequest -> {
+                    PhoneNumber phone = new PhoneNumber();
+                    phone.setNumber(phoneRequest.getNumber());
+                    phone.setCountryCode(phoneRequest.getCountrycode());
+                    phone.setCityCode(phoneRequest.getCitycode());
+                    return phone;
+                })
+                .collect(Collectors.toList());
+
+        user.setPhoneNumbers(phones);
+
+        return user;
     }
 
     private UserResponse buildUserResponse(User user) {
