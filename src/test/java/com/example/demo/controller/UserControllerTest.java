@@ -34,7 +34,7 @@ public class UserControllerTest {
 
     @BeforeEach
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
         mockMvc = MockMvcBuilders.standaloneSetup(userController).build();
     }
 
@@ -101,8 +101,8 @@ public class UserControllerTest {
         mockMvc.perform(post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
-                .andExpect(status().isBadRequest())
-                .andExpect(content().json("{\"mensaje\": \"falta la propiedad phones o su contenido es inválido\"}"));
+                        .andExpect(status().isBadRequest())
+                        .andExpect(content().json("{\"mensaje\": \"falta la propiedad phones o su contenido es inválido\"}"));
     }
 
     @Test

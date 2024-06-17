@@ -1,6 +1,8 @@
 package com.example.demo.database;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.mindrot.jbcrypt.BCrypt;
 import jakarta.persistence.*;
 
@@ -14,6 +16,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
+@NoArgsConstructor
 public class User {
     @Id
     @GeneratedValue
